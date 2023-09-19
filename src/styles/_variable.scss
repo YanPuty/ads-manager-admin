@@ -1,0 +1,19 @@
+:root {
+  --cl-bg: white;
+  --cl-txt: #666;
+}
+
+@mixin dark() {
+  --cl-bg: rgb(27, 27, 27);
+  --cl-txt: #666;
+}
+
+.dark {
+  @include dark();
+}
+
+@media (prefers-color-scheme: dark) {
+  .auto {
+    @include dark();
+  }
+}
