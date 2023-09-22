@@ -21,13 +21,47 @@ function Sidebar() {
   function toggleMenu() {
     setTextChange(!textChange)
     if (window.innerWidth <= 640) {
-      setScreenChange(!screenChange)
+
     }
   }
   return (
     <>
       <main className="flex w-full h-screen">
-        <aside className={` bg-white h-screen ${screenChange ? 'hidden' : 'flex items-center'} shadow-lg p-4 space-y-3 flex-col`}>
+        <aside className={`sm:hidden bg-white h-screen ${screenChange ? 'hidden' : 'flex items-center'} shadow-lg p-4 space-y-3 flex-col`}>
+          <section className="flex flex-col items-center max-sm:justify-center mb-5">
+            <img src="/assets/images/logo.png" alt="" />
+            <h2 className={`text-2xl ${textChange && 'hidden'}`}>Ads Manager</h2>
+          </section>
+          <section>
+            <div className="text-xs">General</div>
+            <ul className="text-sm">
+              <Link to="/ad-account">
+                <li className="py-3 pl-2 hover:bg-slate-100 rounded-md cursor-pointer transition duration-300 ease-in-out flex items-center">
+                  <img src="/assets/icons/home.svg" alt="" />
+                  <span className={`ml-3 w-48 ${textChange && 'hidden'}`}>Ads Manager</span>
+                </li>
+              </Link>
+            </ul>
+          </section>
+          <section className="space-y-3">
+            <div className="text-xs">Setting</div>
+            <ul className="text-sm">
+              <Link to="/ad-account">
+                <li className="py-3 pl-2 hover:bg-slate-100 rounded-md cursor-pointer transition duration-300 ease-in-out flex items-center">
+                  <img src="/assets/icons/users.svg" alt="" />
+                  <span className={`ml-3 w-48 ${textChange && 'hidden'}`}>Ad Account Setup</span>
+                </li>
+              </Link>
+              <Link to="/account-management">
+                <li className="py-3 pl-2 hover:bg-slate-100 rounded-md cursor-pointer transition duration-300 ease-in-out flex items-center">
+                  <img src="/assets/icons/lock.svg" alt="" />
+                  <span className={`ml-3 w-48 ${textChange && 'hidden'}`}>Account Management</span>
+                </li>
+              </Link>
+            </ul>
+          </section>
+        </aside>
+        <aside className={`hidden sm:block bg-white h-screen  ${screenChange ? 'hidden' : 'flex items-center'} shadow-lg p-4 space-y-3 flex-col`}>
           <section className="flex flex-col items-center max-sm:justify-center mb-5">
             <img src="/assets/images/logo.png" alt="" />
             <h2 className={`text-2xl ${textChange && 'hidden'}`}>Ads Manager</h2>
