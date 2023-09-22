@@ -8,7 +8,7 @@ function Sidebar() {
 
   useEffect(() => {
     window.addEventListener('resize', onScreenChange)
-  }, [])
+  })
 
   function onScreenChange() {
     if (window.innerWidth <= 640) {
