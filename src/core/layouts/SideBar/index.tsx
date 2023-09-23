@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { Link, Outlet } from "react-router-dom";
 
 function Sidebar() {
   const [screenChange, setScreenChange] = useState<boolean>(false);
@@ -28,7 +28,7 @@ function Sidebar() {
     <>
       <main className="flex w-full h-screen">
         <aside
-          className={`overflow-hidden bg-white absolute sm:relative h-screen shadow-lg p-4 space-y-3 top-0 sm:left-0 animate duration-300
+          className={`overflow-hidden bg-white absolute sm:relative shadow-lg p-4 space-y-3 top-0 sm:left-0 animate duration-300
           ${textChange && !screenChange ? "w-20" : "w-80"}
           ${!toggle ? "left-[0%]" : "left-[-100%]"}`}
         >
@@ -105,10 +105,16 @@ function Sidebar() {
                 alt=""
                 onClick={toggleHamburger}
               />
-              <div>Profile</div>
+              <div className="flex items-center cursor-pointer">
+                <div className="mr-4">
+                  <div className="font-medium">Edgar Jones</div>
+                  <div className="text-xs text-right">Advertiser</div>
+                </div>
+                <img src="/assets/images/logo.png" alt="" />
+              </div>
             </div>
           </div>
-          <div className="w-full bg-white rounded-lg h-64 text-md p-4">
+          <div className="w-full bg-white rounded-lg p-4">
             <Outlet />
           </div>
         </section>

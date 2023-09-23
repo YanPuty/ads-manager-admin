@@ -22,3 +22,69 @@ body {
 .my-bg-color {
   background-color: #f8f7fa;
 }
+
+
+.input-search {
+  position: relative;
+  background: #FBFBFB;
+  padding: 13px 16px 13px 45px;
+  border-radius: 8px;
+  background-repeat: no-repeat;
+  background-position: 16px;
+}
+
+.table {
+  width: 100%;
+
+  thead {
+    th {
+      padding: 16px 20px;
+      border-bottom: 1px solid #EDEDED;
+      background: #FBFBFB;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: normal;
+      font-style: normal;
+    }
+  }
+
+  tbody {
+    tr {
+      cursor: pointer;
+      transition: 0.3s background cubic-bezier(0.86, 0, 0.07, 1);
+
+      &:hover {
+        background-color: #EDEDED;
+      }
+
+      td {
+        padding: 16px 20px;
+        border-bottom: 1px solid #EDEDED;
+        font-size: 15px;
+        font-style: normal;
+        font-weight: 300;
+        line-height: 22px;
+      }
+    }
+  }
+}
+
+.delivery-status {
+  padding: 5px;
+  border-radius: 10px;
+
+  &.active {
+    color: #000;
+    background: rgba(86, 188, 77, 0.50);
+  }
+
+  &.complete {
+    color: #000;
+    background: rgba(0, 163, 255, 0.50);
+  }
+
+  &.error {
+    color: #FFF;
+    background-color: rgba(255, 0, 0, 0.80);
+  }
+}
