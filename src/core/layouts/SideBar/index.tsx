@@ -28,23 +28,22 @@ function Sidebar() {
     <>
       <main className="flex w-full h-screen">
         <aside
-          className={`overflow-hidden bg-white absolute sm:relative shadow-lg p-4 space-y-3 top-0 sm:left-0 animate duration-300
-          ${textChange && !screenChange ? "w-20" : "w-80"}
-          ${!toggle ? "left-[0%]" : "left-[-100%]"}`}
+          className={`overflow-hidden h-screen z-10 bg-white absolute sm:relative shadow-lg p-4 space-y-3 top-0 sm:left-0 animate duration-300
+          ${textChange && !screenChange ? "min-w-20" : "min-w-[300px]"}
+          ${!toggle ? "left-[0%]" : "left-[-100%] "}`}
         >
           <section className="flex flex-col items-center max-sm:justify-start">
             <img
               src="/assets/icons/delete.svg"
               alt=""
               onClick={toggleHamburger}
-              className={`sm:hidden absolute left-[100%] p-2 top-0 cursor-pointer`}
+              className={`sm:hidden absolute left-[85%] p-2 top-0 cursor-pointer`}
             />
             <div className="flex self-start items-center">
               <img src="/assets/images/logo.png" alt="" />
               <h2
-                className={`text-2xl duration-300 animate whitespace-nowrap ${
-                  textChange && !screenChange && "hidden"
-                }`}
+                className={`text-2xl duration-300 animate whitespace-nowrap ${textChange && !screenChange && "hidden"
+                  }`}
               >
                 Ads Manager
               </h2>
@@ -57,9 +56,8 @@ function Sidebar() {
                 <li className="py-3 pl-2 mt-2 hover:bg-slate-100 rounded-md cursor-pointer transition duration-300 ease-in-out flex items-center">
                   <img src="/assets/icons/home.svg" alt="" />
                   <span
-                    className={`ml-3 duration-500 animate ${
-                      textChange && !screenChange && "hidden"
-                    }`}
+                    className={`ml-3 duration-500 animate ${textChange && !screenChange && "hidden"
+                      }`}
                   >
                     Ads Manager
                   </span>
@@ -74,9 +72,8 @@ function Sidebar() {
                 <li className="py-3 pl-2 hover:bg-slate-100 rounded-md cursor-pointer transition duration-300 ease-in-out flex items-center">
                   <img src="/assets/icons/users.svg" alt="" />
                   <span
-                    className={`ml-3 duration-500 animate ${
-                      textChange && !screenChange && "hidden"
-                    }`}
+                    className={`ml-3 duration-500 animate ${textChange && !screenChange && "hidden"
+                      }`}
                   >
                     Ad Account Setup
                   </span>
@@ -86,9 +83,8 @@ function Sidebar() {
                 <li className="py-3 pl-2 hover:bg-slate-100 rounded-md cursor-pointer transition duration-300 ease-in-out flex items-center">
                   <img src="/assets/icons/lock.svg" alt="" />
                   <span
-                    className={`ml-3 duration-500 animate ${
-                      textChange && !screenChange && "hidden"
-                    }`}
+                    className={`ml-3 duration-500 animate ${textChange && !screenChange && "hidden"
+                      }`}
                   >
                     Account Management
                   </span>
@@ -97,13 +93,14 @@ function Sidebar() {
             </ul>
           </section>
         </aside>
-        <section className="w-full p-6 space-y-6">
+        <section className="w-full p-6 space-y-6 overflow-scroll">
           <div className="bg-white rounded-lg p-4">
             <div className="flex items-center justify-between">
               <img
                 src="/assets/icons/hamburger.svg"
                 alt=""
                 onClick={toggleHamburger}
+                className="cursor-pointer"
               />
               <div className="flex items-center cursor-pointer">
                 <div className="mr-4">
