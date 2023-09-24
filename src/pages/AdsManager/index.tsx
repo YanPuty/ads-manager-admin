@@ -1,15 +1,19 @@
-import React from "react";
+import React from 'react';
 
+import { DateRangePicker } from '../../core';
 
 function AdsManagerListingPage() {
   return (
     <div>
-      <input
-        className="input-search"
-        type="text"
-        placeholder="Search Filter"
-        style={{ backgroundImage: "url(/assets/icons/search.svg)" }}
-      />
+      <div className="flex items-center justify-between">
+        <input
+          className="input-search"
+          type="text"
+          placeholder="Search Filter"
+          style={{ backgroundImage: "url(/assets/icons/search.svg)" }}
+        />
+        <DateRangePicker />
+      </div>
       <div className="overflow-scroll">
         <table className="table mt-5">
           <thead>
