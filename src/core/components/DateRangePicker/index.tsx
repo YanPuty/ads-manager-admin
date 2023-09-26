@@ -10,6 +10,7 @@ export interface DateRangePickerProps {}
 
 function DateRangePicker(props: DateRangePickerProps) {
   const date = new Date();
+  const [expand, setExpand] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [toDate, setToDate] = useState<Date | null>(null);
   const [month, setMonth] = useState(date.getMonth());
@@ -58,7 +59,7 @@ function DateRangePicker(props: DateRangePickerProps) {
       setSelectedDate(date);
       return;
     }
-    if (selectedDate) {
+    if (selectedDate && date >= selectedDate) {
       if (!toDate) {
         setToDate(date);
         return;
@@ -91,19 +92,38 @@ function DateRangePicker(props: DateRangePickerProps) {
     };
   };
 
+  const onClickClear = () => {
+    setSelectedDate(null);
+    setToDate(null);
+  };
+  const ctxExpanded = () =>
+    classNames({ "h-auto opacity-100": expand, "h-0 opacity-0": !expand });
+
   return (
     <div className="date-range-wrapper">
-      <div className="input-date flex items-center justify-between">
+      <div
+        className="input-date flex items-center justify-between cursor-pointer"
+        onClick={() => setExpand(!expand)}
+      >
         <div>{selectedDate?.toDateString()}</div>
         <div>{toDate?.toDateString()}</div>
+        {(selectedDate || toDate) && (
+          <div className="cursor-pointer clear-input" onClick={onClickClear}>
+            <img src="/assets/icons/cross.svg" alt="" height="12" width="12" />
+          </div>
+        )}
       </div>
-
-      <div className="date-content">
-        <div className="flex justify-between">
+      <div
+        className={classNames(
+          ctxExpanded(),
+          "date-content overflow-hidden transition-all duration-300 ease-in-out",
+        )}
+      >
+        <div className="flex justify-between p-6">
           <div>
             <div className="relative pt-4 pb-10">
               <div
-                className={classNames("absolute left-0 top-6 ", {
+                className={classNames("absolute left-0 top-5", {
                   disabled: isCurrentDateAndYear(year, month),
                 })}
                 onClick={onPrevMoths}
@@ -151,7 +171,7 @@ function DateRangePicker(props: DateRangePickerProps) {
               <div className="text-center">
                 {getNextMonthLabels(month, year)}
               </div>
-              <div className="absolute right-0 top-6">
+              <div className="absolute right-0 top-5">
                 <img
                   src="/assets/icons/arrow-right.svg"
                   alt=""
