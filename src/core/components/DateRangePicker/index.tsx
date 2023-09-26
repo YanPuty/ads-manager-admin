@@ -1,13 +1,14 @@
-import classNames from "classnames";
-import React, { useState } from "react";
+import classNames from 'classnames';
+import { isEmpty } from 'lodash';
+import React, { useState } from 'react';
 
-import { DATE_OF_THE_WEEK } from "../../constants/date";
+import { DATE_OF_THE_WEEK } from '../../constants/date';
 import {
   generateDateArray,
   getNextMonthLabels,
   getPrevMonthLabels,
   isCurrentDateAndYear,
-} from "../../helpers";
+} from '../../helpers';
 
 export interface DateRangePickerProps {}
 
@@ -73,37 +74,24 @@ function DateRangePicker(props: DateRangePickerProps) {
     }
   };
 
-  const isSelectedDate = (currentDate: number, month: number) => {
-    if (!selectedDate) {
+  const ctxSelectedDate = (month: number, dateNumber: number) => {
+    if (!dateNumber) {
       return;
     }
-    const date = new Date(year, month, currentDate);
-    const isSelectedDate =
-      date.getDate() === selectedDate.getDate() &&
-      date.getMonth() === selectedDate.getMonth() &&
-      date.getFullYear() === selectedDate.getFullYear();
-    const isBetweenDateRange = selectedDate < date && toDate;
-    return {
-      "is-selected-date": isSelectedDate,
-      "within-range": isBetweenDateRange,
-    };
-  };
-
-  const isSelectedToDate = (currentDate: number, month: number) => {
-    if (!toDate) {
-      return;
+    const date = new Date(year, month, dateNumber);
+    const strSelected = selectedDate?.toDateString() ?? '';
+    let isSelected = false;
+    if (selectedDate) {
+      isSelected = strSelected === date.toDateString();
     }
-    const date = new Date(year, month, currentDate);
-
-    const isSelectedDate =
-      date.getDate() === toDate.getDate() &&
-      date.getMonth() === toDate.getMonth() &&
-      date.getFullYear() === toDate.getFullYear();
-    const isBetweenDateRange = toDate > date;
-
+    let isSelectedToDate = false;
+    if (toDate) {
+      isSelectedToDate = toDate.toDateString() === date.toDateString();
+    }
+    const isNotEmpty = selectedDate && toDate;
     return {
-      "is-selected-date": isSelectedDate,
-      "within-range": isBetweenDateRange,
+      'is-selected-date': isSelected || isSelectedToDate,
+      'within-range': isNotEmpty ? date > selectedDate && date < toDate : false,
     };
   };
 
@@ -119,7 +107,7 @@ function DateRangePicker(props: DateRangePickerProps) {
           <div>
             <div className="relative pt-4 pb-10">
               <div
-                className={classNames("absolute left-0 top-6 ", {
+                className={classNames('absolute left-0 top-6 ', {
                   disabled: isCurrentDateAndYear(year, month),
                 })}
                 onClick={onPrevMoths}
@@ -139,7 +127,7 @@ function DateRangePicker(props: DateRangePickerProps) {
               {DATE_OF_THE_WEEK.map((name: string, index: number) => (
                 <li
                   className="text-center"
-                  style={{ width: "46px" }}
+                  style={{ width: '46px' }}
                   key={index}
                 >
                   {name}
@@ -151,13 +139,13 @@ function DateRangePicker(props: DateRangePickerProps) {
                 <div
                   onClick={() => onSelectedDate(month, name)}
                   className={classNames(
-                    "col-span-1 date-item flex items-center justify-center",
+                    'col-span-1 date-item flex items-center justify-center',
                     getDisabledDate(name),
-                    isSelectedDate(name, month),
+                    ctxSelectedDate(month, name)
                   )}
                   key={index}
                 >
-                  {name === 0 ? "" : name}
+                  {name === 0 ? '' : name}
                 </div>
               ))}
             </div>
@@ -178,7 +166,7 @@ function DateRangePicker(props: DateRangePickerProps) {
             </div>
             <ul className="flex">
               {DATE_OF_THE_WEEK.map((name: string, index: number) => (
-                <li style={{ width: "46px" }} key={index}>
+                <li style={{ width: '46px' }} key={index}>
                   {name}
                 </li>
               ))}
@@ -188,13 +176,13 @@ function DateRangePicker(props: DateRangePickerProps) {
                 <div
                   onClick={() => onSelectedDate(month + 1, name)}
                   className={classNames(
-                    "col-span-1 date-item flex items-center justify-center",
+                    'col-span-1 date-item flex items-center justify-center',
                     getDisabledForToDate(month + 1, name),
-                    isSelectedToDate(name, month + 1),
+                    ctxSelectedDate(month + 1, name)
                   )}
                   key={index}
                 >
-                  {name === 0 ? "" : name}
+                  {name === 0 ? '' : name}
                 </div>
               ))}
             </div>
