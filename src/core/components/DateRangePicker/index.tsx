@@ -1,15 +1,14 @@
 import classNames from 'classnames';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { DATE_OF_THE_WEEK } from '../../constants/date';
 import {
     generateDateArray, getNextMonthLabels, getPrevMonthLabels, isCurrentDateAndYear
 } from '../../helpers';
 
-export interface DateRangePickerProps {}
-
-function DateRangePicker(props: DateRangePickerProps) {
+function DateRangePicker() {
   const date = new Date();
+  const ref = useRef<any>(null);
   const [expand, setExpand] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [toDate, setToDate] = useState<Date | null>(null);
@@ -99,8 +98,22 @@ function DateRangePicker(props: DateRangePickerProps) {
   const ctxExpanded = () =>
     classNames({ "h-auto opacity-100": expand, "h-0 opacity-0": !expand });
 
+  function handleClickOutside(event: MouseEvent) {
+    if (ref.current && !ref.current.contains(event.target)) {
+      setExpand(false);
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener("click", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [ref]);
+
   return (
-    <div className="date-range-wrapper">
+    <div className="date-range-wrapper" ref={ref}>
       <div
         className="input-date flex items-center justify-between cursor-pointer"
         onClick={() => setExpand(!expand)}
