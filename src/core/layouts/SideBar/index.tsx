@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 
-import { Dropdown } from '../../../components';
-
 function Sidebar() {
   const [screenChange, setScreenChange] = useState<boolean>(false);
   const [textChange, setTextChange] = useState<boolean>(true);
@@ -32,7 +30,7 @@ function Sidebar() {
     <>
       <main className="flex w-full h-screen">
         <aside
-          className={`overflow-hidden h-screen z-30 bg-white absolute sm:relative shadow-lg p-4 space-y-3 top-0 sm:left-0 animate duration-300
+          className={`overflow-hidden h-full z-30 bg-white absolute sm:relative shadow-lg p-4 space-y-3 top-0 sm:left-0 animate duration-300
           ${
             textChange && !screenChange
               ? 'min-w-20 flex flex-col items-center'
@@ -75,12 +73,6 @@ function Sidebar() {
                 />
               )}
             </div>
-            <Dropdown
-              category="Select User"
-              toggle={toggle}
-              pic={true}
-              items={['User 1', 'User 2']}
-            />
           </section>
           <section>
             <div className="text-xs">General</div>
@@ -147,16 +139,7 @@ function Sidebar() {
               </div>
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-x-10 gap-y-3 mb-3">
-            <h2 className="font-bold">Ad Account</h2>
-            <Dropdown
-              category="Select Ad Account"
-              addedStyle="min-w-[350px]"
-              pic={false}
-              items={['Ad Account(123456789)']}
-            />
-          </div>
-          <div className="w-full bg-white rounded-lg p-4">
+          <div className="w-full h-screen bg-white rounded-lg p-4">
             <Outlet />
           </div>
         </section>

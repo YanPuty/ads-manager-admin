@@ -12,7 +12,9 @@ function sendRequest<T, D = any>(config: AxiosRequestConfig<D>): Promise<T> {
   if (!config.headers) {
     config.headers = {};
   }
-  const token = 'EAAFnbr3VFWsBOZCrwQPrPGu2j4V5ysfzx1Das9sGDw0FToOFhefHHykiydCWWL6o5QrCHwEMgpp9ZAZCdmI2GvobJvSM0WUHjbLAgUjygcSSWxkEZBhNgbl7peYtNWKS2ZCmZAg3tTCdIoA0VoJbGKx8cAmoZAkNUJZAuCYGSMUIpZBBi3ivb2ulSJuUbCl4JODjZCwR2b1ZCkQC2fmQ5PxUwaeXP9pFi8ZCTvbcQEBYZAsMIBD8ZD';
+  console.log(process.env);
+
+  const token = process.env.REACT_APP_TOKEN;
   config.headers['Authorization'] = `Bearer ${token}`;
   config.baseURL = 'https://graph.facebook.com/v18.0';
   config.headers = _.merge(config.headers, defaultHeaders);

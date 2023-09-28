@@ -1,45 +1,75 @@
 import React, { useEffect, useState } from 'react';
 
-import { DateRangePicker } from '../../core';
+import { DateRangePicker, Dropdown } from '../../core';
 import { useApi } from '../../hooks';
+import { AdAccountsData } from '../../models/AdAccounts';
 import { AdsSetsData } from '../../models/AdsSets';
+import { getAllAdsAccounts } from '../../service/ad-accounts';
 import { getAdsSets } from '../../service/ads-manager';
 
 function AdsManagerListingPage() {
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [adsSetsDate, setAdsSetData] = useState<AdsSetsData[]>([]);
-  const { response } = useApi({ service: getAdsSets, params: {}, effects: [] });
+  const [adAccounts, setAdAccounts] = useState<AdAccountsData[]>([]);
+
+  const { response: allAdsAccount } = useApi({
+    service: getAllAdsAccounts,
+    params: {},
+    effects: [],
+  });
 
   useEffect(() => {
-    if (response && response.data) {
-      setAdsSetData(response.data);
+    if (allAdsAccount && allAdsAccount.data.length) {
+      const mappedData = allAdsAccount.data.map((item) => ({
+        ...item,
+        name: item.name.concat(' (', item.account_id, ')'),
+      }));
+      setAdAccounts(mappedData);
+      setSelectedId(mappedData[0].id);
     }
-  }, [response]);
+  }, [allAdsAccount]);
+
+  useEffect(() => {
+    if (selectedId) {
+      getAdsSets(selectedId).then((response) => {
+        if (response && response.data) {
+          setAdsSetData(response.data);
+        }
+      });
+    }
+  }, [selectedId]);
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex gap-x-4">
         <input
           className="input-search"
           type="text"
           placeholder="Search Filter"
           style={{ backgroundImage: 'url(/assets/icons/search.svg)' }}
         />
+        <Dropdown
+          classNames="w-60"
+          category="Select User"
+          items={adAccounts}
+          onChange={({ id }) => setSelectedId(id)}
+        />
         <DateRangePicker />
       </div>
-      <div className="overflow-scroll">
+      <div className="overflow-scroll" style={{ maxHeight: '80vh' }}>
         <table className="table mt-5">
           <thead>
             <tr>
-              <th>No</th>
-              <th>Ad</th>
-              <th>Delivery</th>
-              <th>Page Name</th>
-              <th>Days</th>
-              <th>Budgets</th>
-              <th>Objective</th>
-              <th>Reach</th>
-              <th>Impression</th>
-              <th>Impression</th>
+              <th className="sticky top-0 px-6 py-3 ">No</th>
+              <th className="sticky top-0 px-6 py-3 ">Ad</th>
+              <th className="sticky top-0 px-6 py-3 ">Delivery</th>
+              <th className="sticky top-0 px-6 py-3 ">Page Name</th>
+              <th className="sticky top-0 px-6 py-3 ">Days</th>
+              <th className="sticky top-0 px-6 py-3 ">Budgets</th>
+              <th className="sticky top-0 px-6 py-3 ">Objective</th>
+              <th className="sticky top-0 px-6 py-3 ">Reach</th>
+              <th className="sticky top-0 px-6 py-3 ">Impression</th>
+              <th className="sticky top-0 px-6 py-3 ">Impression</th>
             </tr>
           </thead>
 
