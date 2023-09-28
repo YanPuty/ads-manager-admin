@@ -98,17 +98,17 @@ function DateRangePicker() {
   const ctxExpanded = () =>
     classNames({ "h-auto opacity-100": expand, "h-0 opacity-0": !expand });
 
-  function handleClickOutside(event: MouseEvent) {
+  const onClickOutside = (event: MouseEvent) => {
     if (ref.current && !ref.current.contains(event.target)) {
       setExpand(false);
     }
-  }
+  };
 
   useEffect(() => {
-    document.addEventListener("click", handleClickOutside);
+    document.addEventListener("click", onClickOutside);
 
     return () => {
-      document.removeEventListener("click", handleClickOutside);
+      document.removeEventListener("click", onClickOutside);
     };
   }, [ref]);
 
