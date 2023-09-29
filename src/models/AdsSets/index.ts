@@ -1,3 +1,5 @@
+import { InSightsData } from '../Insights';
+
 export interface AdsSets {
   data: AdsSetsData[]
   paging: Paging
@@ -8,6 +10,9 @@ export interface AdsSetsData {
   campaign: Campaign
   status: string
   id: string
+  // Add On Mapped Key
+  insight?: InSightsData;
+  insights?: InSightsData[];
 }
 
 export interface Campaign {

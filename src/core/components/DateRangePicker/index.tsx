@@ -1,17 +1,35 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import classNames from 'classnames';
 import React, { useEffect, useRef, useState } from 'react';
 
 import { DATE_OF_THE_WEEK } from '../../constants/date';
 import {
-    generateDateArray, getNextMonthLabels, getPrevMonthLabels, isCurrentDateAndYear
+  generateDateArray,
+  getNextMonthLabels,
+  getPrevMonthLabels,
+  isCurrentDateAndYear,
 } from '../../helpers';
 
-function DateRangePicker() {
+export interface DateRangePickerProps {
+  from?: Date | null;
+  to?: Date | null;
+  isDisabledBehindDate?: boolean;
+  onChange?: (param: DateTypeParam) => void;
+}
+
+export interface DateTypeParam {
+  from: Date | null;
+  to: Date | null;
+}
+
+function DateRangePicker(props: DateRangePickerProps) {
+  const { from = null, to = null, isDisabledBehindDate = true } = props;
   const date = new Date();
   const ref = useRef<any>(null);
   const [expand, setExpand] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [toDate, setToDate] = useState<Date | null>(null);
+  //
+  const [fromDate, setFromDate] = useState<Date | null>(from);
+  const [toDate, setToDate] = useState<Date | null>(to);
   const [month, setMonth] = useState(date.getMonth());
   const [year, setYear] = useState(date.getFullYear());
 
@@ -34,6 +52,9 @@ function DateRangePicker() {
   };
 
   const getDisabledDate = (currentDate: number) => {
+    if (isDisabledBehindDate) {
+      return '';
+    }
     return classNames({
       disabled:
         currentDate < date.getDate() &&
@@ -54,18 +75,15 @@ function DateRangePicker() {
 
   const onSelectedDate = (month: number, name: number) => {
     const date = new Date(year, month, name);
-    if (!selectedDate && !toDate) {
-      setSelectedDate(date);
-      return;
+    if (!fromDate && !toDate) {
+      setFromDate(date);
     }
-    if (selectedDate && date >= selectedDate) {
+    if (fromDate && date >= fromDate) {
       if (!toDate) {
         setToDate(date);
-        return;
       }
       if (toDate) {
         setToDate(date);
-        return;
       }
     }
   };
@@ -75,28 +93,28 @@ function DateRangePicker() {
       return;
     }
     const date = new Date(year, month, dateNumber);
-    const strSelected = selectedDate?.toDateString() ?? "";
+    const strSelected = fromDate?.toDateString() ?? '';
     let isSelected = false;
-    if (selectedDate) {
+    if (fromDate) {
       isSelected = strSelected === date.toDateString();
     }
     let isSelectedToDate = false;
     if (toDate) {
       isSelectedToDate = toDate.toDateString() === date.toDateString();
     }
-    const isNotEmpty = selectedDate && toDate;
+    const isNotEmpty = fromDate && toDate;
     return {
-      "is-selected-date": isSelected || isSelectedToDate,
-      "within-range": isNotEmpty ? date > selectedDate && date < toDate : false,
+      'is-selected-date': isSelected || isSelectedToDate,
+      'within-range': isNotEmpty ? date > fromDate && date < toDate : false,
     };
   };
 
   const onClickClear = () => {
-    setSelectedDate(null);
+    setFromDate(null);
     setToDate(null);
   };
   const ctxExpanded = () =>
-    classNames({ "h-auto opacity-100": expand, "h-0 opacity-0": !expand });
+    classNames({ 'h-auto opacity-100': expand, 'h-0 opacity-0': !expand });
 
   const onClickOutside = (event: MouseEvent) => {
     if (ref.current && !ref.current.contains(event.target)) {
@@ -105,12 +123,18 @@ function DateRangePicker() {
   };
 
   useEffect(() => {
-    document.addEventListener("click", onClickOutside);
-
+    document.addEventListener('click', onClickOutside);
     return () => {
-      document.removeEventListener("click", onClickOutside);
+      document.removeEventListener('click', onClickOutside);
     };
   }, [ref]);
+
+  useEffect(() => {
+    const { onChange } = props;
+    if (onChange) {
+      onChange({ from: fromDate, to: toDate });
+    }
+  }, [fromDate, toDate]);
 
   return (
     <div className="date-range-wrapper" ref={ref}>
@@ -118,9 +142,9 @@ function DateRangePicker() {
         className="input-date flex items-center justify-between cursor-pointer"
         onClick={() => setExpand(!expand)}
       >
-        <div>{selectedDate?.toDateString()}</div>
+        <div>{fromDate?.toDateString()}</div>
         <div>{toDate?.toDateString()}</div>
-        {(selectedDate || toDate) && (
+        {(fromDate || toDate) && (
           <div className="cursor-pointer clear-input" onClick={onClickClear}>
             <img src="/assets/icons/cross.svg" alt="" height="12" width="12" />
           </div>
@@ -129,14 +153,14 @@ function DateRangePicker() {
       <div
         className={classNames(
           ctxExpanded(),
-          "date-content overflow-hidden transition-all duration-300 ease-in-out",
+          'date-content overflow-hidden transition-all duration-300 ease-in-out'
         )}
       >
         <div className="flex justify-between p-6">
           <div>
             <div className="relative pt-4 pb-10">
               <div
-                className={classNames("absolute left-0 top-5", {
+                className={classNames('absolute left-0 top-5', {
                   disabled: isCurrentDateAndYear(year, month),
                 })}
                 onClick={onPrevMoths}
@@ -156,7 +180,7 @@ function DateRangePicker() {
               {DATE_OF_THE_WEEK.map((name: string, index: number) => (
                 <li
                   className="text-center"
-                  style={{ width: "46px" }}
+                  style={{ width: '46px' }}
                   key={index}
                 >
                   {name}
@@ -168,13 +192,13 @@ function DateRangePicker() {
                 <div
                   onClick={() => onSelectedDate(month, name)}
                   className={classNames(
-                    "col-span-1 date-item flex items-center justify-center",
+                    'col-span-1 date-item flex items-center justify-center',
                     getDisabledDate(name),
-                    ctxSelectedDate(month, name),
+                    ctxSelectedDate(month, name)
                   )}
                   key={index}
                 >
-                  {name === 0 ? "" : name}
+                  {name === 0 ? '' : name}
                 </div>
               ))}
             </div>
@@ -195,7 +219,7 @@ function DateRangePicker() {
             </div>
             <ul className="flex">
               {DATE_OF_THE_WEEK.map((name: string, index: number) => (
-                <li style={{ width: "46px" }} key={index}>
+                <li style={{ width: '46px' }} key={index}>
                   {name}
                 </li>
               ))}
@@ -205,13 +229,13 @@ function DateRangePicker() {
                 <div
                   onClick={() => onSelectedDate(month + 1, name)}
                   className={classNames(
-                    "col-span-1 date-item flex items-center justify-center",
+                    'col-span-1 date-item flex items-center justify-center',
                     getDisabledForToDate(month + 1, name),
-                    ctxSelectedDate(month + 1, name),
+                    ctxSelectedDate(month + 1, name)
                   )}
                   key={index}
                 >
-                  {name === 0 ? "" : name}
+                  {name === 0 ? '' : name}
                 </div>
               ))}
             </div>

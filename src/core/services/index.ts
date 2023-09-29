@@ -12,7 +12,6 @@ function sendRequest<T, D = any>(config: AxiosRequestConfig<D>): Promise<T> {
   if (!config.headers) {
     config.headers = {};
   }
-  console.log(process.env);
 
   const token = process.env.REACT_APP_TOKEN;
   config.headers['Authorization'] = `Bearer ${token}`;
