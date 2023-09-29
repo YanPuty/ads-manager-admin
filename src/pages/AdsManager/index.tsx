@@ -83,7 +83,7 @@ function AdsManagerListingPage() {
           style={{ backgroundImage: "url(/assets/icons/search.svg)" }}
         />
         <Dropdown
-          classNames="w-60"
+          classNames="w-80"
           category="Select User"
           items={adAccounts}
           onChange={({ id }) => setSelectedId(id)}

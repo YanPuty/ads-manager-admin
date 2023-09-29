@@ -202,7 +202,10 @@ function DateRangePicker(props: DateRangePickerProps) {
             </div>
           </div>
           <div>
-            <div className="relative pt-4 pb-10" onClick={onNextMonth}>
+            <div
+              className="relative pt-4 pb-10 cursor-pointer"
+              onClick={onNextMonth}
+            >
               <div className="text-center">
                 {getNextMonthLabels(month, year)}
               </div>
