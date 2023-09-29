@@ -4,10 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import { DATE_OF_THE_WEEK } from '../../constants/date';
 import {
-  generateDateArray,
-  getNextMonthLabels,
-  getPrevMonthLabels,
-  isCurrentDateAndYear,
+    generateDateArray, getNextMonthLabels, getPrevMonthLabels, isCurrentDateAndYear
 } from '../../helpers';
 
 export interface DateRangePickerProps {
@@ -53,7 +50,7 @@ function DateRangePicker(props: DateRangePickerProps) {
 
   const getDisabledDate = (currentDate: number) => {
     if (isDisabledBehindDate) {
-      return '';
+      return "";
     }
     return classNames({
       disabled:
@@ -93,7 +90,7 @@ function DateRangePicker(props: DateRangePickerProps) {
       return;
     }
     const date = new Date(year, month, dateNumber);
-    const strSelected = fromDate?.toDateString() ?? '';
+    const strSelected = fromDate?.toDateString() ?? "";
     let isSelected = false;
     if (fromDate) {
       isSelected = strSelected === date.toDateString();
@@ -104,8 +101,8 @@ function DateRangePicker(props: DateRangePickerProps) {
     }
     const isNotEmpty = fromDate && toDate;
     return {
-      'is-selected-date': isSelected || isSelectedToDate,
-      'within-range': isNotEmpty ? date > fromDate && date < toDate : false,
+      "is-selected-date": isSelected || isSelectedToDate,
+      "within-range": isNotEmpty ? date > fromDate && date < toDate : false,
     };
   };
 
@@ -114,7 +111,7 @@ function DateRangePicker(props: DateRangePickerProps) {
     setToDate(null);
   };
   const ctxExpanded = () =>
-    classNames({ 'h-auto opacity-100': expand, 'h-0 opacity-0': !expand });
+    classNames({ "h-auto opacity-100": expand, "h-0 opacity-0": !expand });
 
   const onClickOutside = (event: MouseEvent) => {
     if (ref.current && !ref.current.contains(event.target)) {
@@ -123,9 +120,9 @@ function DateRangePicker(props: DateRangePickerProps) {
   };
 
   useEffect(() => {
-    document.addEventListener('click', onClickOutside);
+    document.addEventListener("click", onClickOutside);
     return () => {
-      document.removeEventListener('click', onClickOutside);
+      document.removeEventListener("click", onClickOutside);
     };
   }, [ref]);
 
@@ -153,15 +150,16 @@ function DateRangePicker(props: DateRangePickerProps) {
       <div
         className={classNames(
           ctxExpanded(),
-          'date-content overflow-hidden transition-all duration-300 ease-in-out'
+          "date-content overflow-hidden transition-all duration-300 ease-in-out",
         )}
       >
         <div className="flex justify-between p-6">
           <div>
             <div className="relative pt-4 pb-10">
               <div
-                className={classNames('absolute left-0 top-5', {
-                  disabled: isCurrentDateAndYear(year, month),
+                className={classNames("absolute cursor-pointer left-0 top-5", {
+                  disabled:
+                    isCurrentDateAndYear(year, month) && !isDisabledBehindDate,
                 })}
                 onClick={onPrevMoths}
               >
@@ -180,7 +178,7 @@ function DateRangePicker(props: DateRangePickerProps) {
               {DATE_OF_THE_WEEK.map((name: string, index: number) => (
                 <li
                   className="text-center"
-                  style={{ width: '46px' }}
+                  style={{ width: "46px" }}
                   key={index}
                 >
                   {name}
@@ -192,13 +190,13 @@ function DateRangePicker(props: DateRangePickerProps) {
                 <div
                   onClick={() => onSelectedDate(month, name)}
                   className={classNames(
-                    'col-span-1 date-item flex items-center justify-center',
+                    "col-span-1 date-item flex items-center justify-center",
                     getDisabledDate(name),
-                    ctxSelectedDate(month, name)
+                    ctxSelectedDate(month, name),
                   )}
                   key={index}
                 >
-                  {name === 0 ? '' : name}
+                  {name === 0 ? "" : name}
                 </div>
               ))}
             </div>
@@ -219,7 +217,7 @@ function DateRangePicker(props: DateRangePickerProps) {
             </div>
             <ul className="flex">
               {DATE_OF_THE_WEEK.map((name: string, index: number) => (
-                <li style={{ width: '46px' }} key={index}>
+                <li style={{ width: "46px" }} key={index}>
                   {name}
                 </li>
               ))}
@@ -229,13 +227,13 @@ function DateRangePicker(props: DateRangePickerProps) {
                 <div
                   onClick={() => onSelectedDate(month + 1, name)}
                   className={classNames(
-                    'col-span-1 date-item flex items-center justify-center',
+                    "col-span-1 date-item flex items-center justify-center",
                     getDisabledForToDate(month + 1, name),
-                    ctxSelectedDate(month + 1, name)
+                    ctxSelectedDate(month + 1, name),
                   )}
                   key={index}
                 >
-                  {name === 0 ? '' : name}
+                  {name === 0 ? "" : name}
                 </div>
               ))}
             </div>

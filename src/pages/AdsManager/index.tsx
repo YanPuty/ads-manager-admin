@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { filter, find, flatMap } from 'lodash';
 import React, { useEffect, useState } from 'react';
 
@@ -29,7 +30,7 @@ function AdsManagerListingPage() {
     if (allAdsAccount && allAdsAccount.data.length) {
       const mappedData = allAdsAccount.data.map((item) => ({
         ...item,
-        name: item.name.concat(' (', item.account_id, ')'),
+        name: item.name.concat(" (", item.account_id, ")"),
       }));
       setAdAccounts(mappedData);
       setSelectedId(mappedData[0].id);
@@ -49,7 +50,7 @@ function AdsManagerListingPage() {
     if (adsSetsDate.length && since && until) {
       const queryParam = { since, until };
       const allInSightsPromise = adsSetsDate.map((item) =>
-        getInsightsByAdId(item.id, queryParam)
+        getInsightsByAdId(item.id, queryParam),
       );
 
       Promise.all(allInSightsPromise).then((insights: InSights[]) => {
@@ -74,14 +75,12 @@ function AdsManagerListingPage() {
 
   return (
     <div>
-      <h2>{since?.toString()}</h2>
-      <h2>{until?.toString()}</h2>
       <div className="flex gap-x-4">
         <input
           className="input-search"
           type="text"
           placeholder="Search Filter"
-          style={{ backgroundImage: 'url(/assets/icons/search.svg)' }}
+          style={{ backgroundImage: "url(/assets/icons/search.svg)" }}
         />
         <Dropdown
           classNames="w-60"
@@ -91,7 +90,7 @@ function AdsManagerListingPage() {
         />
         <DateRangePicker from={since} to={until} onChange={onChangeDate} />
       </div>
-      <div className="overflow-scroll" style={{ maxHeight: '80vh' }}>
+      <div className="overflow-scroll" style={{ maxHeight: "80vh" }}>
         <table className="table mt-5">
           <thead>
             <tr>
@@ -112,7 +111,7 @@ function AdsManagerListingPage() {
             {adsSetsDate.map((item, index) => (
               <tr key={item.id}>
                 <td className="text-center">{index + 1}</td>
-                <td className="truncate" style={{ maxWidth: '200px' }}>
+                <td className="truncate" style={{ maxWidth: "200px" }}>
                   {item.name}
                 </td>
                 <td className="text-center">
@@ -125,7 +124,7 @@ function AdsManagerListingPage() {
                 <td className="text-center">{item.insight?.reach}</td>
                 <td className="text-center">{item.insight?.impressions}</td>
                 <td className="text-center">
-                  {item.insight?.spend ? `$ ${item.insight?.spend}` : ''}
+                  {item.insight?.spend ? `$ ${item.insight?.spend}` : ""}
                 </td>
               </tr>
             ))}
