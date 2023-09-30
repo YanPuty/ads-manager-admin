@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import classNames from 'classnames';
 import React, { useEffect, useRef, useState } from 'react';
 
@@ -6,12 +7,26 @@ import {
     generateDateArray, getNextMonthLabels, getPrevMonthLabels, isCurrentDateAndYear
 } from '../../helpers';
 
-function DateRangePicker() {
+export interface DateRangePickerProps {
+  from?: Date | null;
+  to?: Date | null;
+  isDisabledBehindDate?: boolean;
+  onChange?: (param: DateTypeParam) => void;
+}
+
+export interface DateTypeParam {
+  from: Date | null;
+  to: Date | null;
+}
+
+function DateRangePicker(props: DateRangePickerProps) {
+  const { from = null, to = null, isDisabledBehindDate = true } = props;
   const date = new Date();
   const ref = useRef<any>(null);
   const [expand, setExpand] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [toDate, setToDate] = useState<Date | null>(null);
+  //
+  const [fromDate, setFromDate] = useState<Date | null>(from);
+  const [toDate, setToDate] = useState<Date | null>(to);
   const [month, setMonth] = useState(date.getMonth());
   const [year, setYear] = useState(date.getFullYear());
 
@@ -34,6 +49,9 @@ function DateRangePicker() {
   };
 
   const getDisabledDate = (currentDate: number) => {
+    if (isDisabledBehindDate) {
+      return "";
+    }
     return classNames({
       disabled:
         currentDate < date.getDate() &&
@@ -54,18 +72,15 @@ function DateRangePicker() {
 
   const onSelectedDate = (month: number, name: number) => {
     const date = new Date(year, month, name);
-    if (!selectedDate && !toDate) {
-      setSelectedDate(date);
-      return;
+    if (!fromDate && !toDate) {
+      setFromDate(date);
     }
-    if (selectedDate && date >= selectedDate) {
+    if (fromDate && date >= fromDate) {
       if (!toDate) {
         setToDate(date);
-        return;
       }
       if (toDate) {
         setToDate(date);
-        return;
       }
     }
   };
@@ -75,24 +90,24 @@ function DateRangePicker() {
       return;
     }
     const date = new Date(year, month, dateNumber);
-    const strSelected = selectedDate?.toDateString() ?? "";
+    const strSelected = fromDate?.toDateString() ?? "";
     let isSelected = false;
-    if (selectedDate) {
+    if (fromDate) {
       isSelected = strSelected === date.toDateString();
     }
     let isSelectedToDate = false;
     if (toDate) {
       isSelectedToDate = toDate.toDateString() === date.toDateString();
     }
-    const isNotEmpty = selectedDate && toDate;
+    const isNotEmpty = fromDate && toDate;
     return {
       "is-selected-date": isSelected || isSelectedToDate,
-      "within-range": isNotEmpty ? date > selectedDate && date < toDate : false,
+      "within-range": isNotEmpty ? date > fromDate && date < toDate : false,
     };
   };
 
   const onClickClear = () => {
-    setSelectedDate(null);
+    setFromDate(null);
     setToDate(null);
   };
   const ctxExpanded = () =>
@@ -106,11 +121,17 @@ function DateRangePicker() {
 
   useEffect(() => {
     document.addEventListener("click", onClickOutside);
-
     return () => {
       document.removeEventListener("click", onClickOutside);
     };
   }, [ref]);
+
+  useEffect(() => {
+    const { onChange } = props;
+    if (onChange) {
+      onChange({ from: fromDate, to: toDate });
+    }
+  }, [fromDate, toDate]);
 
   return (
     <div className="date-range-wrapper" ref={ref}>
@@ -118,9 +139,9 @@ function DateRangePicker() {
         className="input-date flex items-center justify-between cursor-pointer"
         onClick={() => setExpand(!expand)}
       >
-        <div>{selectedDate?.toDateString()}</div>
+        <div>{fromDate?.toDateString()}</div>
         <div>{toDate?.toDateString()}</div>
-        {(selectedDate || toDate) && (
+        {(fromDate || toDate) && (
           <div className="cursor-pointer clear-input" onClick={onClickClear}>
             <img src="/assets/icons/cross.svg" alt="" height="12" width="12" />
           </div>
@@ -136,8 +157,9 @@ function DateRangePicker() {
           <div>
             <div className="relative pt-4 pb-10">
               <div
-                className={classNames("absolute left-0 top-5", {
-                  disabled: isCurrentDateAndYear(year, month),
+                className={classNames("absolute cursor-pointer left-0 top-5", {
+                  disabled:
+                    isCurrentDateAndYear(year, month) && !isDisabledBehindDate,
                 })}
                 onClick={onPrevMoths}
               >
@@ -180,7 +202,10 @@ function DateRangePicker() {
             </div>
           </div>
           <div>
-            <div className="relative pt-4 pb-10" onClick={onNextMonth}>
+            <div
+              className="relative pt-4 pb-10 cursor-pointer"
+              onClick={onNextMonth}
+            >
               <div className="text-center">
                 {getNextMonthLabels(month, year)}
               </div>

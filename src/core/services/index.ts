@@ -9,12 +9,19 @@ function sendRequest<T, D = any>(config: AxiosRequestConfig<D>): Promise<T> {
     'x-community-type': 0,
     'x-platform-type': 2,
   };
+  if (!config.headers) {
+    config.headers = {};
+  }
+
+  const token = process.env.REACT_APP_TOKEN;
+  config.headers['Authorization'] = `Bearer ${token}`;
+  config.baseURL = 'https://graph.facebook.com/v18.0';
   config.headers = _.merge(config.headers, defaultHeaders);
 
   return axios<any, AxiosResponse<T>>(config)
     .then((response: AxiosResponse<T>) => response.data)
     .catch((err) => {
-      if (err.response == null) {
+      if (err.data == null) {
         err.errorCode = -1;
         throw err;
       } else {
