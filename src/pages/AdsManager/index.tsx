@@ -75,7 +75,7 @@ function AdsManagerListingPage() {
 
   return (
     <div>
-      <div className="flex gap-x-4">
+      <div className="flex gap-x-4 flex-wrap">
         <input
           className="input-search"
           type="text"

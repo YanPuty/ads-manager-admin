@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import { DATE_OF_THE_WEEK } from '../../constants/date';
 import {
-    generateDateArray, getNextMonthLabels, getPrevMonthLabels, isCurrentDateAndYear
+  generateDateArray, getNextMonthLabels, getPrevMonthLabels, isCurrentDateAndYear
 } from '../../helpers';
 
 export interface DateRangePickerProps {

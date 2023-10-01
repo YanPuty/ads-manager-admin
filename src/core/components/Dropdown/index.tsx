@@ -1,6 +1,6 @@
 import { find } from 'lodash';
-import { useState } from 'react';
-
+import { useEffect, useState } from 'react';
+import { useRef } from 'react';
 export type DropdownProps = {
   toggle?: boolean;
   pic?: boolean;
@@ -18,13 +18,27 @@ export interface ItemList {
 function DropdownComponent(props: DropdownProps) {
   const { toggle, classNames, pic, items, category, onChange } = props;
   const [selectedId, setSelectedId] = useState<string>('');
-  const [open, setOpen] = useState<boolean>(false);
+  const [expand, setExpand] = useState<boolean>(false);
+  const ref = useRef<any>(null)
 
   const onClickExpanded = (item: ItemList) => {
     setSelectedId(item.id);
-    setOpen(false);
+    setExpand(false);
     if (onChange) {
       onChange(item);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("click", onClickOutside);
+    return () => {
+      document.removeEventListener("click", onClickOutside);
+    };
+  }, [ref]);
+
+  const onClickOutside = (event: MouseEvent) => {
+    if (ref.current && !ref.current.contains(event.target)) {
+      setExpand(false);
     }
   };
 
@@ -40,7 +54,8 @@ function DropdownComponent(props: DropdownProps) {
     <section>
       <div
         className={`h-full flex items-center cursor-pointer justify-between border rounded-md relative ${classNames} ${toggleClass}`}
-        onClick={() => setOpen(!open)}
+        onClick={() => setExpand(!expand)}
+        ref={ref}
       >
         <div className={`flex items-center space-x-5 ${pic ? '' : 'm-2'}`}>
           {pic && (
@@ -53,7 +68,7 @@ function DropdownComponent(props: DropdownProps) {
           <h2 className="text-sm">{selectedLabel()}</h2>
         </div>
         <img src="/assets/icons/caret-down-fill.svg" className="pr-2" alt="" />
-        {open && items.length > 0 && (
+        {expand && items.length > 0 && (
           <div className="border rounded-md absolute top-10 z-20 bg-white w-full">
             {items.map((item) => (
               <div
