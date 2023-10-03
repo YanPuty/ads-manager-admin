@@ -13,9 +13,11 @@ import { getInsightsByAdId } from '../../service/insights';
 
 function AdsManagerListingPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [searchInput, setSearchInput] = useState<string>('')
 
   const [adsSetsDate, setAdsSetData] = useState<AdsSetsData[]>([]);
   const [adAccounts, setAdAccounts] = useState<AdAccountsData[]>([]);
+  const [items, setItems] = useState<AdsSetsData[]>([])
 
   const [since, setSince] = useState<Date | null>(new Date(2022, 7, 6));
   const [until, setUnTil] = useState<Date | null>(new Date(2023, 8, 29));
@@ -73,6 +75,18 @@ function AdsManagerListingPage() {
     }
   };
 
+  useEffect(() => {
+    const filterSearch = adsSetsDate.filter((item) =>
+      item.name.toLowerCase().replace(/\s/g, "").includes(searchInput.replace(/\s/g, "").toLowerCase()) ||
+      item.campaign.name.toLowerCase().replace(/\s/g, "").includes(searchInput.replace(/\s/g, "").toLowerCase()) ||
+      item.status.toLowerCase().replace(/\s/g, "").includes(searchInput.replace(/\s/g, "").toLowerCase()) ||
+      item.insight?.objective.toLowerCase().replace(/\s/g, "").includes(searchInput.replace(/\s/g, "").toLowerCase()) ||
+      item.insight?.reach.toLowerCase().replace(/\s/g, "").includes(searchInput.replace(/\s/g, "").toLowerCase()) ||
+      item.insight?.impressions.toLowerCase().replace(/\s/g, "").includes(searchInput.replace(/\s/g, "").toLowerCase()) ||
+      item.insight?.spend.toLowerCase().replace(/\s/g, "").includes(searchInput.replace(/\s/g, "").toLowerCase()))
+    setItems(filterSearch)
+  }, [searchInput, adsSetsDate])
+
   return (
     <div>
       <div className="flex gap-x-4 flex-wrap">
@@ -81,6 +95,7 @@ function AdsManagerListingPage() {
           type="text"
           placeholder="Search Filter"
           style={{ backgroundImage: "url(/assets/icons/search.svg)" }}
+          onChange={(e) => setSearchInput(e.target.value)}
         />
         <Dropdown
           classNames="w-80"
@@ -106,9 +121,8 @@ function AdsManagerListingPage() {
               <th className="sticky top-0 px-6 py-3 ">Amount Spend</th>
             </tr>
           </thead>
-
           <tbody>
-            {adsSetsDate.map((item, index) => (
+            {items.map((item, index) => (
               <tr key={item.id}>
                 <td className="text-center">{index + 1}</td>
                 <td className="truncate" style={{ maxWidth: "200px" }}>
