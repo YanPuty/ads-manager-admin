@@ -1,12 +1,14 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { find } from 'lodash';
-import { useEffect, useState } from 'react';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+
 export type DropdownProps = {
   toggle?: boolean;
   pic?: boolean;
   classNames?: string;
   items: ItemList[];
   category: string;
+  value?: string | null;
   onChange?: (param: ItemList) => void;
 };
 
@@ -16,10 +18,18 @@ export interface ItemList {
 }
 
 function DropdownComponent(props: DropdownProps) {
-  const { toggle, classNames, pic, items, category, onChange } = props;
-  const [selectedId, setSelectedId] = useState<string>('');
+  const {
+    toggle,
+    classNames,
+    pic,
+    items,
+    category,
+    onChange,
+    value = "",
+  } = props;
+  const [selectedId, setSelectedId] = useState<string>("");
   const [expand, setExpand] = useState<boolean>(false);
-  const ref = useRef<any>(null)
+  const ref = useRef<any>(null);
 
   const onClickExpanded = (item: ItemList) => {
     setSelectedId(item.id);
@@ -28,6 +38,12 @@ function DropdownComponent(props: DropdownProps) {
       onChange(item);
     }
   };
+
+  useEffect(() => {
+    if (value && !selectedId) {
+      setSelectedId(value);
+    }
+  }, [value]);
 
   useEffect(() => {
     document.addEventListener("click", onClickOutside);
@@ -48,7 +64,7 @@ function DropdownComponent(props: DropdownProps) {
     }
     return category;
   };
-  const toggleClass = !toggle ? 'block' : 'hidden';
+  const toggleClass = !toggle ? "block" : "hidden";
 
   return (
     <section>
@@ -57,7 +73,7 @@ function DropdownComponent(props: DropdownProps) {
         onClick={() => setExpand(!expand)}
         ref={ref}
       >
-        <div className={`flex items-center space-x-5 ${pic ? '' : 'm-2'}`}>
+        <div className={`flex items-center space-x-5 ${pic ? "" : "m-2"}`}>
           {pic && (
             <img
               src="/assets/icons/apple.svg"

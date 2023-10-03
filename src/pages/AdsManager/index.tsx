@@ -131,6 +131,7 @@ function AdsManagerListingPage() {
           classNames="w-80"
           category="Select User"
           items={adAccounts}
+          value={selectedId}
           onChange={({ id }) => setSelectedId(id)}
         />
         <DateRangePicker from={since} to={until} onChange={onChangeDate} />
