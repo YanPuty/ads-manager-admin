@@ -127,14 +127,18 @@ function AdsManagerListingPage() {
           style={{ backgroundImage: "url(/assets/icons/search.svg)" }}
           onChange={(e) => setSearchInput(e.target.value)}
         />
-        <Dropdown
-          classNames="w-80"
-          category="Select User"
-          items={adAccounts}
-          value={selectedId}
-          onChange={({ id }) => setSelectedId(id)}
-        />
-        <DateRangePicker from={since} to={until} onChange={onChangeDate} />
+        {adAccounts.length > 0 && (
+          <>
+            <Dropdown
+              classNames="w-80"
+              category="Select User"
+              items={adAccounts}
+              value={selectedId}
+              onChange={({ id }) => setSelectedId(id)}
+            />
+            <DateRangePicker from={since} to={until} onChange={onChangeDate} />
+          </>
+        )}
       </div>
       <div className="overflow-scroll" style={{ maxHeight: "80vh" }}>
         <table className="table mt-5">
