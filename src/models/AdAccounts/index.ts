@@ -9,4 +9,5 @@ export interface AdAccountsData {
   id: string;
   name: string;
   account_id: string;
+  account_status: number;
 }
