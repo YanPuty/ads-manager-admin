@@ -8,6 +8,7 @@ export interface AdsSets {
 export interface AdsSetsData {
   name: string
   campaign: Campaign
+  end_time?: string;
   status: string
   id: string
   // Add On Mapped Key
@@ -16,8 +17,11 @@ export interface AdsSetsData {
 }
 
 export interface Campaign {
-  name: string;
   id: string
+  name: string;
+  lifetime_budget: string;
+  start_time?: string;
+  daily_budget?: string;
 }
 
 export interface Paging {

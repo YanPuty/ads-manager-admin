@@ -102,7 +102,10 @@ function DateRangePicker(props: DateRangePickerProps) {
     const isNotEmpty = fromDate && toDate;
     return {
       "is-selected-date": isSelected || isSelectedToDate,
-      "within-range": isNotEmpty ? date > fromDate && date < toDate : false,
+      "within-range":
+        isNotEmpty && !(isSelected || isSelectedToDate)
+          ? date > fromDate && date < toDate
+          : false,
     };
   };
 

@@ -13,14 +13,14 @@ import { getInsightsByAdId } from '../../service/insights';
 
 function AdsManagerListingPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [searchInput, setSearchInput] = useState<string>('')
+  const [searchInput, setSearchInput] = useState<string>("");
 
   const [adsSetsDate, setAdsSetData] = useState<AdsSetsData[]>([]);
   const [adAccounts, setAdAccounts] = useState<AdAccountsData[]>([]);
-  const [items, setItems] = useState<AdsSetsData[]>([])
+  const [items, setItems] = useState<AdsSetsData[]>([]);
 
   const [since, setSince] = useState<Date | null>(new Date(2022, 7, 6));
-  const [until, setUnTil] = useState<Date | null>(new Date(2023, 8, 29));
+  const [until, setUnTil] = useState<Date | null>(new Date());
 
   const { response: allAdsAccount } = useApi({
     service: getAllAdsAccounts,
@@ -29,7 +29,7 @@ function AdsManagerListingPage() {
   });
 
   useEffect(() => {
-    if (allAdsAccount && allAdsAccount.data.length) {
+    if (allAdsAccount?.data.length) {
       const mappedData = allAdsAccount.data.map((item) => ({
         ...item,
         name: item.name.concat(" (", item.account_id, ")"),
@@ -76,16 +76,46 @@ function AdsManagerListingPage() {
   };
 
   useEffect(() => {
-    const filterSearch = adsSetsDate.filter((item) =>
-      item.name.toLowerCase().replace(/\s/g, "").includes(searchInput.replace(/\s/g, "").toLowerCase()) ||
-      item.campaign.name.toLowerCase().replace(/\s/g, "").includes(searchInput.replace(/\s/g, "").toLowerCase()) ||
-      item.status.toLowerCase().replace(/\s/g, "").includes(searchInput.replace(/\s/g, "").toLowerCase()) ||
-      item.insight?.objective.toLowerCase().replace(/\s/g, "").includes(searchInput.replace(/\s/g, "").toLowerCase()) ||
-      item.insight?.reach.toLowerCase().replace(/\s/g, "").includes(searchInput.replace(/\s/g, "").toLowerCase()) ||
-      item.insight?.impressions.toLowerCase().replace(/\s/g, "").includes(searchInput.replace(/\s/g, "").toLowerCase()) ||
-      item.insight?.spend.toLowerCase().replace(/\s/g, "").includes(searchInput.replace(/\s/g, "").toLowerCase()))
-    setItems(filterSearch)
-  }, [searchInput, adsSetsDate])
+    const filterSearch = adsSetsDate.filter(
+      (item) =>
+        item.name
+          .toLowerCase()
+          .replace(/\s/g, "")
+          .includes(searchInput.replace(/\s/g, "").toLowerCase()) ||
+        item.campaign.name
+          .toLowerCase()
+          .replace(/\s/g, "")
+          .includes(searchInput.replace(/\s/g, "").toLowerCase()) ||
+        item.status
+          .toLowerCase()
+          .replace(/\s/g, "")
+          .includes(searchInput.replace(/\s/g, "").toLowerCase()) ||
+        item.insight?.objective
+          .toLowerCase()
+          .replace(/\s/g, "")
+          .includes(searchInput.replace(/\s/g, "").toLowerCase()) ||
+        item.insight?.reach
+          .toLowerCase()
+          .replace(/\s/g, "")
+          .includes(searchInput.replace(/\s/g, "").toLowerCase()) ||
+        item.insight?.impressions
+          .toLowerCase()
+          .replace(/\s/g, "")
+          .includes(searchInput.replace(/\s/g, "").toLowerCase()) ||
+        item.insight?.spend
+          .toLowerCase()
+          .replace(/\s/g, "")
+          .includes(searchInput.replace(/\s/g, "").toLowerCase()),
+    );
+    setItems(filterSearch);
+  }, [searchInput, adsSetsDate]);
+
+  const formatNumber = (amount = "0") => {
+    if (Number.isNaN(amount)) {
+      return 0;
+    }
+    return Number(Number(amount) / 100).toFixed(2);
+  };
 
   return (
     <div>
@@ -113,7 +143,6 @@ function AdsManagerListingPage() {
               <th className="sticky top-0 px-6 py-3 ">Ad</th>
               <th className="sticky top-0 px-6 py-3 ">Delivery</th>
               <th className="sticky top-0 px-6 py-3 ">Page Name</th>
-              <th className="sticky top-0 px-6 py-3 ">Days</th>
               <th className="sticky top-0 px-6 py-3 ">Budgets</th>
               <th className="sticky top-0 px-6 py-3 ">Objective</th>
               <th className="sticky top-0 px-6 py-3 ">Reach</th>
@@ -132,8 +161,9 @@ function AdsManagerListingPage() {
                   <div className="delivery-status active">{item.status}</div>
                 </td>
                 <td className="text-center">{item.campaign.name}</td>
-                <td className="text-center">10 Days</td>
-                <td className="text-center">$ 1,000</td>
+                <td className="text-center">
+                  ${formatNumber(item.campaign.lifetime_budget)}
+                </td>
                 <td className="text-center">{item.insight?.objective}</td>
                 <td className="text-center">{item.insight?.reach}</td>
                 <td className="text-center">{item.insight?.impressions}</td>

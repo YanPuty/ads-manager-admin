@@ -15,7 +15,8 @@ export interface InSightsData {
   adset_name: string
   cpc: string
   cpp: string
-  ad_id: string
+  ad_id: string;
+  adset_id: string;
   cpm: string
   objective: string
   website_ctr: WebsiteCtr[]
