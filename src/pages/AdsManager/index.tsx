@@ -2,7 +2,8 @@
 import { filter, find, flatMap } from 'lodash';
 import React, { useEffect, useState } from 'react';
 
-import { DateRangePicker, DateTypeParam, Dropdown } from '../../core';
+import { Alert, DateRangePicker, DateTypeParam, Dropdown, ItemList } from '../../core';
+import { AccountStatus } from '../../enums/AccountStatus';
 import { useApi } from '../../hooks';
 import { AdAccountsData } from '../../models/AdAccounts';
 import { AdsSetsData } from '../../models/AdsSets';
@@ -13,6 +14,7 @@ import { getInsightsByAdId } from '../../service/insights';
 
 function AdsManagerListingPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [accountStatus, setAccountStatus] = useState<number | null>(null);
   const [searchInput, setSearchInput] = useState<string>("");
 
   const [adsSetsDate, setAdsSetData] = useState<AdsSetsData[]>([]);
@@ -36,6 +38,7 @@ function AdsManagerListingPage() {
       }));
       setAdAccounts(mappedData);
       setSelectedId(mappedData[0].id);
+      setAccountStatus(mappedData[0].account_status);
     }
   }, [allAdsAccount]);
 
@@ -117,9 +120,27 @@ function AdsManagerListingPage() {
     return Number(Number(amount) / 100).toFixed(2);
   };
 
+  const formatNumberWithComma = (amount: any) => {
+    if (Number.isNaN(amount)) {
+      return 0;
+    }
+    return Number(amount).toLocaleString();
+  };
+
+  const onChangeSelectedAccount = ({ id }: ItemList) => {
+    const accountStatus = find(adAccounts, { id: id })?.account_status ?? null;
+    setSelectedId(id);
+    setAccountStatus(accountStatus);
+  };
+
+  const isNotActive = ![
+    AccountStatus.ACTIVE,
+    AccountStatus.ANY_ACTIVE,
+  ].includes(accountStatus ?? -1);
+
   return (
     <div>
-      <div className="flex gap-x-4 flex-wrap">
+      <div className="flex gap-4 flex-wrap">
         <input
           className="input-search"
           type="text"
@@ -134,10 +155,19 @@ function AdsManagerListingPage() {
               category="Select User"
               items={adAccounts}
               value={selectedId}
-              onChange={({ id }) => setSelectedId(id)}
+              onChange={onChangeSelectedAccount}
             />
             <DateRangePicker from={since} to={until} onChange={onChangeDate} />
           </>
+        )}
+      </div>
+      <div>
+        {accountStatus && isNotActive && (
+          <Alert
+            type="danger"
+            title="Facebook account is restricted from advertising"
+            description="its assets can't be used to advertise because the account didn't comply with our Advertising Policies affecting business assets or other standards."
+          />
         )}
       </div>
       <div className="overflow-scroll" style={{ maxHeight: "80vh" }}>
@@ -170,8 +200,12 @@ function AdsManagerListingPage() {
                   ${formatNumber(item.campaign.lifetime_budget)}
                 </td>
                 <td className="text-center">{item.insight?.objective}</td>
-                <td className="text-center">{item.insight?.reach}</td>
-                <td className="text-center">{item.insight?.impressions}</td>
+                <td className="text-center">
+                  {formatNumberWithComma(item.insight?.reach)}
+                </td>
+                <td className="text-center">
+                  {formatNumberWithComma(item.insight?.impressions)}
+                </td>
                 <td className="text-center">
                   {item.insight?.spend ? `$ ${item.insight?.spend}` : ""}
                 </td>
