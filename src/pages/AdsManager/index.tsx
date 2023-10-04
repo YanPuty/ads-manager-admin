@@ -38,6 +38,7 @@ function AdsManagerListingPage() {
       }));
       setAdAccounts(mappedData);
       setSelectedId(mappedData[0].id);
+      setAccountStatus(mappedData[0].account_status);
     }
   }, [allAdsAccount]);
 
@@ -132,6 +133,11 @@ function AdsManagerListingPage() {
     setAccountStatus(accountStatus);
   };
 
+  const isNotActive = ![
+    AccountStatus.ACTIVE,
+    AccountStatus.ANY_ACTIVE,
+  ].includes(accountStatus ?? -1);
+
   return (
     <div>
       <div className="flex gap-4 flex-wrap">
@@ -156,16 +162,13 @@ function AdsManagerListingPage() {
         )}
       </div>
       <div>
-        {accountStatus &&
-          ![AccountStatus.ACTIVE, AccountStatus.ANY_ACTIVE].includes(
-            accountStatus,
-          ) && (
-            <Alert
-              type="danger"
-              title="Facebook account is restricted from advertising"
-              description="its assets can't be used to advertise because the account didn't comply with our Advertising Policies affecting business assets or other standards."
-            />
-          )}
+        {accountStatus && isNotActive && (
+          <Alert
+            type="danger"
+            title="Facebook account is restricted from advertising"
+            description="its assets can't be used to advertise because the account didn't comply with our Advertising Policies affecting business assets or other standards."
+          />
+        )}
       </div>
       <div className="overflow-scroll" style={{ maxHeight: "80vh" }}>
         <table className="table mt-5">
