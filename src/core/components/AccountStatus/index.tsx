@@ -2,55 +2,55 @@ import classNames from 'classnames';
 import { useState } from 'react';
 
 export type AccountStatusProps = {
-  type?: 'warning' | 'danger' | 'success';
+  type?: "warning" | "danger" | "success";
   title?: string;
   description?: string;
 };
 
-function AccountStatus(props: AccountStatusProps) {
-  const { type = 'success', description = '', title = '' } = props;
+function Alert(props: AccountStatusProps) {
+  const { type = "success", description = "", title = "" } = props;
   const [closed, setClosed] = useState(false);
 
   const typeClass = classNames({
-    'bg-green-50 text-green-800': type === 'success',
-    'bg-red-50 text-red-800': type === 'danger',
-    'bg-orange-50 text-orange-800': type === 'warning',
+    "bg-green-50 text-green-800": type === "success",
+    "bg-red-50 text-red-800": type === "danger",
+    "bg-orange-50 text-orange-800": type === "warning",
     hidden: closed,
   });
 
   const getIconImage = (): string => {
     switch (type) {
-      case 'success':
-        return '/assets/icons/exclamation-circle-gray.svg';
-      case 'danger':
-        return '/assets/icons/exclamation-circle-red.svg';
-      case 'warning':
-        return '/assets/icons/exclamation-circle-yellow.svg';
+      case "success":
+        return "/assets/icons/exclamation-circle-gray.svg";
+      case "danger":
+        return "/assets/icons/exclamation-circle-red.svg";
+      case "warning":
+        return "/assets/icons/exclamation-circle-yellow.svg";
 
       default:
-        return '/assets/icons/exclamation-circle-gray.svg';
+        return "/assets/icons/exclamation-circle-gray.svg";
     }
   };
 
   const getCrossImageUrl = (): string => {
     switch (type) {
-      case 'success':
-        return '/assets/icons/cross-gray.svg';
-      case 'danger':
-        return '/assets/icons/cross-red.svg';
-      case 'warning':
-        return '/assets/icons/cross-orange.svg';
+      case "success":
+        return "/assets/icons/cross-gray.svg";
+      case "danger":
+        return "/assets/icons/cross-red.svg";
+      case "warning":
+        return "/assets/icons/cross-orange.svg";
 
       default:
-        return '/assets/icons/cross-gray.svg';
+        return "/assets/icons/cross-gray.svg";
     }
   };
 
   return (
     <div
       className={classNames(
-        'text-sm p-5 my-5 border flex justify-between space-x-5 items-center',
-        typeClass
+        "text-sm p-5 my-5 border rounded-md flex justify-between space-x-5 items-center",
+        typeClass,
       )}
     >
       <div className="flex flex-wrap items-start gap-3.5">
@@ -70,4 +70,4 @@ function AccountStatus(props: AccountStatusProps) {
     </div>
   );
 }
-export default AccountStatus;
+export default Alert;
