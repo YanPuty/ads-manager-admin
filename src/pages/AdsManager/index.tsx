@@ -2,7 +2,7 @@
 import { filter, find, flatMap } from 'lodash';
 import React, { useEffect, useState } from 'react';
 
-import { DateRangePicker, DateTypeParam, Dropdown } from '../../core';
+import { AccountStatus, DateRangePicker, DateTypeParam, Dropdown } from '../../core';
 import { useApi } from '../../hooks';
 import { AdAccountsData } from '../../models/AdAccounts';
 import { AdsSetsData } from '../../models/AdsSets';
@@ -116,10 +116,17 @@ function AdsManagerListingPage() {
     }
     return Number(Number(amount) / 100).toFixed(2);
   };
+  const formatNumberWithComma = (amount: any) => {
+    if (Number.isNaN(amount)) {
+      return 0;
+    }
+    return Number(amount).toLocaleString();
+  };
+
 
   return (
     <div>
-      <div className="flex gap-x-4 flex-wrap">
+      <div className="flex gap-4 flex-wrap">
         <input
           className="input-search"
           type="text"
@@ -138,6 +145,15 @@ function AdsManagerListingPage() {
             />
             <DateRangePicker from={since} to={until} onChange={onChangeDate} />
           </>
+        )}
+      </div>
+      <div>
+        {[
+          { id: 1, status: 1 },
+          { id: 2, status: 9 },
+          { id: 3, status: 10 },
+        ].map((account) =>
+          <AccountStatus status={account.status} key={account.id} />
         )}
       </div>
       <div className="overflow-scroll" style={{ maxHeight: "80vh" }}>
@@ -170,8 +186,8 @@ function AdsManagerListingPage() {
                   ${formatNumber(item.campaign.lifetime_budget)}
                 </td>
                 <td className="text-center">{item.insight?.objective}</td>
-                <td className="text-center">{item.insight?.reach}</td>
-                <td className="text-center">{item.insight?.impressions}</td>
+                <td className="text-center">{formatNumberWithComma(item.insight?.reach)}</td>
+                <td className="text-center">{formatNumberWithComma(item.insight?.impressions)}</td>
                 <td className="text-center">
                   {item.insight?.spend ? `$ ${item.insight?.spend}` : ""}
                 </td>
@@ -180,7 +196,7 @@ function AdsManagerListingPage() {
           </tbody>
         </table>
       </div>
-    </div>
+    </div >
   );
 }
 
