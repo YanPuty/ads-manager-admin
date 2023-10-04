@@ -2,7 +2,13 @@
 import { filter, find, flatMap } from 'lodash';
 import React, { useEffect, useState } from 'react';
 
-import { AccountStatus, DateRangePicker, DateTypeParam, Dropdown } from '../../core';
+import {
+  AccountStatus,
+  DateRangePicker,
+  DateTypeParam,
+  Dropdown,
+  ItemList,
+} from '../../core';
 import { useApi } from '../../hooks';
 import { AdAccountsData } from '../../models/AdAccounts';
 import { AdsSetsData } from '../../models/AdsSets';
@@ -13,7 +19,8 @@ import { getInsightsByAdId } from '../../service/insights';
 
 function AdsManagerListingPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [searchInput, setSearchInput] = useState<string>("");
+  const [accountStatus, setAccountStatus] = useState<number | null>(null);
+  const [searchInput, setSearchInput] = useState<string>('');
 
   const [adsSetsDate, setAdsSetData] = useState<AdsSetsData[]>([]);
   const [adAccounts, setAdAccounts] = useState<AdAccountsData[]>([]);
@@ -32,7 +39,7 @@ function AdsManagerListingPage() {
     if (allAdsAccount?.data.length) {
       const mappedData = allAdsAccount.data.map((item) => ({
         ...item,
-        name: item.name.concat(" (", item.account_id, ")"),
+        name: item.name.concat(' (', item.account_id, ')'),
       }));
       setAdAccounts(mappedData);
       setSelectedId(mappedData[0].id);
@@ -52,7 +59,7 @@ function AdsManagerListingPage() {
     if (adsSetsDate.length && since && until) {
       const queryParam = { since, until };
       const allInSightsPromise = adsSetsDate.map((item) =>
-        getInsightsByAdId(item.id, queryParam),
+        getInsightsByAdId(item.id, queryParam)
       );
 
       Promise.all(allInSightsPromise).then((insights: InSights[]) => {
@@ -80,42 +87,43 @@ function AdsManagerListingPage() {
       (item) =>
         item.name
           .toLowerCase()
-          .replace(/\s/g, "")
-          .includes(searchInput.replace(/\s/g, "").toLowerCase()) ||
+          .replace(/\s/g, '')
+          .includes(searchInput.replace(/\s/g, '').toLowerCase()) ||
         item.campaign.name
           .toLowerCase()
-          .replace(/\s/g, "")
-          .includes(searchInput.replace(/\s/g, "").toLowerCase()) ||
+          .replace(/\s/g, '')
+          .includes(searchInput.replace(/\s/g, '').toLowerCase()) ||
         item.status
           .toLowerCase()
-          .replace(/\s/g, "")
-          .includes(searchInput.replace(/\s/g, "").toLowerCase()) ||
+          .replace(/\s/g, '')
+          .includes(searchInput.replace(/\s/g, '').toLowerCase()) ||
         item.insight?.objective
           .toLowerCase()
-          .replace(/\s/g, "")
-          .includes(searchInput.replace(/\s/g, "").toLowerCase()) ||
+          .replace(/\s/g, '')
+          .includes(searchInput.replace(/\s/g, '').toLowerCase()) ||
         item.insight?.reach
           .toLowerCase()
-          .replace(/\s/g, "")
-          .includes(searchInput.replace(/\s/g, "").toLowerCase()) ||
+          .replace(/\s/g, '')
+          .includes(searchInput.replace(/\s/g, '').toLowerCase()) ||
         item.insight?.impressions
           .toLowerCase()
-          .replace(/\s/g, "")
-          .includes(searchInput.replace(/\s/g, "").toLowerCase()) ||
+          .replace(/\s/g, '')
+          .includes(searchInput.replace(/\s/g, '').toLowerCase()) ||
         item.insight?.spend
           .toLowerCase()
-          .replace(/\s/g, "")
-          .includes(searchInput.replace(/\s/g, "").toLowerCase()),
+          .replace(/\s/g, '')
+          .includes(searchInput.replace(/\s/g, '').toLowerCase())
     );
     setItems(filterSearch);
   }, [searchInput, adsSetsDate]);
 
-  const formatNumber = (amount = "0") => {
+  const formatNumber = (amount = '0') => {
     if (Number.isNaN(amount)) {
       return 0;
     }
     return Number(Number(amount) / 100).toFixed(2);
   };
+
   const formatNumberWithComma = (amount: any) => {
     if (Number.isNaN(amount)) {
       return 0;
@@ -123,6 +131,11 @@ function AdsManagerListingPage() {
     return Number(amount).toLocaleString();
   };
 
+  const onChangeSelectedAccount = ({ id }: ItemList) => {
+    const accountStatus = find(adAccounts, { id: id })?.account_status ?? null;
+    setSelectedId(id);
+    setAccountStatus(accountStatus);
+  };
 
   return (
     <div>
@@ -131,7 +144,7 @@ function AdsManagerListingPage() {
           className="input-search"
           type="text"
           placeholder="Search Filter"
-          style={{ backgroundImage: "url(/assets/icons/search.svg)" }}
+          style={{ backgroundImage: 'url(/assets/icons/search.svg)' }}
           onChange={(e) => setSearchInput(e.target.value)}
         />
         {adAccounts.length > 0 && (
@@ -141,22 +154,25 @@ function AdsManagerListingPage() {
               category="Select User"
               items={adAccounts}
               value={selectedId}
-              onChange={({ id }) => setSelectedId(id)}
+              onChange={onChangeSelectedAccount}
             />
             <DateRangePicker from={since} to={until} onChange={onChangeDate} />
           </>
         )}
       </div>
       <div>
-        {[
-          { id: 1, status: 1 },
-          { id: 2, status: 9 },
-          { id: 3, status: 10 },
-        ].map((account) =>
-          <AccountStatus status={account.status} key={account.id} />
-        )}
+        <h2>{JSON.stringify(accountStatus)}</h2>
+        <AccountStatus
+          type="success"
+          title="Success"
+          description="
+          Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ipsam
+          adipisci hic unde ab harum facere odio, beatae eligendi ut labore
+          veniam aut laudantium error enim omnis, reprehenderit nemo iusto
+          quaerat."
+        />
       </div>
-      <div className="overflow-scroll" style={{ maxHeight: "80vh" }}>
+      <div className="overflow-scroll" style={{ maxHeight: '80vh' }}>
         <table className="table mt-5">
           <thead>
             <tr>
@@ -175,7 +191,7 @@ function AdsManagerListingPage() {
             {items.map((item, index) => (
               <tr key={item.id}>
                 <td className="text-center">{index + 1}</td>
-                <td className="truncate" style={{ maxWidth: "200px" }}>
+                <td className="truncate" style={{ maxWidth: '200px' }}>
                   {item.name}
                 </td>
                 <td className="text-center">
@@ -186,17 +202,21 @@ function AdsManagerListingPage() {
                   ${formatNumber(item.campaign.lifetime_budget)}
                 </td>
                 <td className="text-center">{item.insight?.objective}</td>
-                <td className="text-center">{formatNumberWithComma(item.insight?.reach)}</td>
-                <td className="text-center">{formatNumberWithComma(item.insight?.impressions)}</td>
                 <td className="text-center">
-                  {item.insight?.spend ? `$ ${item.insight?.spend}` : ""}
+                  {formatNumberWithComma(item.insight?.reach)}
+                </td>
+                <td className="text-center">
+                  {formatNumberWithComma(item.insight?.impressions)}
+                </td>
+                <td className="text-center">
+                  {item.insight?.spend ? `$ ${item.insight?.spend}` : ''}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-    </div >
+    </div>
   );
 }
 
