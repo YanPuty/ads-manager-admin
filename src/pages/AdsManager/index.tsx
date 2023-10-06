@@ -23,9 +23,9 @@ function AdsManagerListingPage() {
 
   const [since, setSince] = useState<Date | null>(new Date(2022, 7, 6));
   const [until, setUnTil] = useState<Date | null>(new Date());
-
   //
   const [loading, setLoading] = useState(false);
+  const [isFetchingInsight, setIsFetchingInsight] = useState(false);
 
   const { response: allAdsAccount } = useApi({
     service: getAllAdsAccounts,
@@ -62,6 +62,7 @@ function AdsManagerListingPage() {
       const allInSightsPromise = adsSetsDate.map((item) =>
         getInsightsByAdId(item.id, queryParam)
       );
+      setIsFetchingInsight(true);
       Promise.all(allInSightsPromise).then((insights: InSights[]) => {
         const flatMapInsight = flatMap(insights, ({ data }) => data);
         const adsSetData = adsSetsDate.map((row) => ({
@@ -70,6 +71,7 @@ function AdsManagerListingPage() {
           insights: filter(flatMapInsight, { ad_id: row.id }),
         }));
         setAdsSetData(adsSetData);
+        setIsFetchingInsight(false);
       });
     }
   }, [adsSetsDate.length, since, until]);
@@ -141,6 +143,13 @@ function AdsManagerListingPage() {
     AccountStatus.ACTIVE,
     AccountStatus.ANY_ACTIVE,
   ].includes(accountStatus ?? -1);
+
+  const fetchingInSightWrapper = (child: any) => {
+    if (isFetchingInsight) {
+      return <div className="h-4 bg-gray-200 mb-6 rounded"></div>;
+    }
+    return child;
+  };
 
   return (
     <div>
@@ -221,15 +230,23 @@ function AdsManagerListingPage() {
                   <td className="text-center">
                     $ {formatNumber(item.campaign.lifetime_budget)}
                   </td>
-                  <td className="text-center">{item.insight?.objective}</td>
                   <td className="text-center">
-                    {formatNumberWithComma(item.insight?.reach)}
+                    {fetchingInSightWrapper(item.insight?.objective)}
                   </td>
                   <td className="text-center">
-                    {formatNumberWithComma(item.insight?.impressions)}
+                    {fetchingInSightWrapper(
+                      formatNumberWithComma(item.insight?.reach)
+                    )}
                   </td>
                   <td className="text-center">
-                    {item.insight?.spend ? `$ ${item.insight?.spend}` : ''}
+                    {fetchingInSightWrapper(
+                      formatNumberWithComma(item.insight?.impressions)
+                    )}
+                  </td>
+                  <td className="text-center">
+                    {fetchingInSightWrapper(
+                      item.insight?.spend ? `$ ${item.insight?.spend}` : ''
+                    )}
                   </td>
                 </tr>
               ))}
