@@ -15,7 +15,7 @@ import { getInsightsByAdId } from '../../service/insights';
 function AdsManagerListingPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [accountStatus, setAccountStatus] = useState<number | null>(null);
-  const [searchInput, setSearchInput] = useState<string>("");
+  const [searchInput, setSearchInput] = useState<string>('');
 
   const [adsSetsDate, setAdsSetData] = useState<AdsSetsData[]>([]);
   const [adAccounts, setAdAccounts] = useState<AdAccountsData[]>([]);
@@ -23,6 +23,9 @@ function AdsManagerListingPage() {
 
   const [since, setSince] = useState<Date | null>(new Date(2022, 7, 6));
   const [until, setUnTil] = useState<Date | null>(new Date());
+  //
+  const [loading, setLoading] = useState(false);
+  const [isFetchingInsight, setIsFetchingInsight] = useState(false);
 
   const { response: allAdsAccount } = useApi({
     service: getAllAdsAccounts,
@@ -34,7 +37,7 @@ function AdsManagerListingPage() {
     if (allAdsAccount?.data.length) {
       const mappedData = allAdsAccount.data.map((item) => ({
         ...item,
-        name: item.name.concat(" (", item.account_id, ")"),
+        name: item.name.concat(' (', item.account_id, ')'),
       }));
       setAdAccounts(mappedData);
       setSelectedId(mappedData[0].id);
@@ -44,8 +47,10 @@ function AdsManagerListingPage() {
 
   useEffect(() => {
     if (selectedId) {
+      setLoading(true);
       getAdsSets(selectedId).then((response) => {
         const data = response.data;
+        setLoading(false);
         setAdsSetData(data);
       });
     }
@@ -55,9 +60,9 @@ function AdsManagerListingPage() {
     if (adsSetsDate.length && since && until) {
       const queryParam = { since, until };
       const allInSightsPromise = adsSetsDate.map((item) =>
-        getInsightsByAdId(item.id, queryParam),
+        getInsightsByAdId(item.id, queryParam)
       );
-
+      setIsFetchingInsight(true);
       Promise.all(allInSightsPromise).then((insights: InSights[]) => {
         const flatMapInsight = flatMap(insights, ({ data }) => data);
         const adsSetData = adsSetsDate.map((row) => ({
@@ -66,6 +71,7 @@ function AdsManagerListingPage() {
           insights: filter(flatMapInsight, { ad_id: row.id }),
         }));
         setAdsSetData(adsSetData);
+        setIsFetchingInsight(false);
       });
     }
   }, [adsSetsDate.length, since, until]);
@@ -83,44 +89,44 @@ function AdsManagerListingPage() {
       (item) =>
         item.name
           .toLowerCase()
-          .replace(/\s/g, "")
-          .includes(searchInput.replace(/\s/g, "").toLowerCase()) ||
+          .replace(/\s/g, '')
+          .includes(searchInput.replace(/\s/g, '').toLowerCase()) ||
         item.campaign.name
           .toLowerCase()
-          .replace(/\s/g, "")
-          .includes(searchInput.replace(/\s/g, "").toLowerCase()) ||
+          .replace(/\s/g, '')
+          .includes(searchInput.replace(/\s/g, '').toLowerCase()) ||
         item.status
           .toLowerCase()
-          .replace(/\s/g, "")
-          .includes(searchInput.replace(/\s/g, "").toLowerCase()) ||
+          .replace(/\s/g, '')
+          .includes(searchInput.replace(/\s/g, '').toLowerCase()) ||
         item.insight?.objective
           .toLowerCase()
-          .replace(/\s/g, "")
-          .includes(searchInput.replace(/\s/g, "").toLowerCase()) ||
+          .replace(/\s/g, '')
+          .includes(searchInput.replace(/\s/g, '').toLowerCase()) ||
         item.insight?.reach
           .toLowerCase()
-          .replace(/\s/g, "")
-          .includes(searchInput.replace(/\s/g, "").toLowerCase()) ||
+          .replace(/\s/g, '')
+          .includes(searchInput.replace(/\s/g, '').toLowerCase()) ||
         item.insight?.impressions
           .toLowerCase()
-          .replace(/\s/g, "")
-          .includes(searchInput.replace(/\s/g, "").toLowerCase()) ||
+          .replace(/\s/g, '')
+          .includes(searchInput.replace(/\s/g, '').toLowerCase()) ||
         item.insight?.spend
           .toLowerCase()
-          .replace(/\s/g, "")
-          .includes(searchInput.replace(/\s/g, "").toLowerCase()),
+          .replace(/\s/g, '')
+          .includes(searchInput.replace(/\s/g, '').toLowerCase())
     );
     setItems(filterSearch);
   }, [searchInput, adsSetsDate]);
 
-  const formatNumber = (amount = "0") => {
+  const formatNumber = (amount = '0') => {
     if (Number.isNaN(amount)) {
       return 0;
     }
     return Number(Number(amount) / 100).toFixed(2);
   };
 
-  const formatNumberWithComma = (amount: any) => {
+  const formatNumberWithComma = (amount = '0') => {
     if (Number.isNaN(amount)) {
       return 0;
     }
@@ -138,6 +144,13 @@ function AdsManagerListingPage() {
     AccountStatus.ANY_ACTIVE,
   ].includes(accountStatus ?? -1);
 
+  const fetchingInSightWrapper = (child: any) => {
+    if (isFetchingInsight) {
+      return <div className="h-4 bg-gray-200 mb-6 rounded"></div>;
+    }
+    return child;
+  };
+
   return (
     <div>
       <div className="flex gap-4 flex-wrap">
@@ -145,7 +158,7 @@ function AdsManagerListingPage() {
           className="input-search"
           type="text"
           placeholder="Search Filter"
-          style={{ backgroundImage: "url(/assets/icons/search.svg)" }}
+          style={{ backgroundImage: 'url(/assets/icons/search.svg)' }}
           onChange={(e) => setSearchInput(e.target.value)}
         />
         {adAccounts.length > 0 && (
@@ -170,8 +183,9 @@ function AdsManagerListingPage() {
           />
         )}
       </div>
-      <div className="overflow-scroll" style={{ maxHeight: "80vh" }}>
-        <table className="table mt-5">
+
+      <div className="overflow-scroll" style={{ maxHeight: '80vh' }}>
+        <table className="table mt-5 relative">
           <thead>
             <tr>
               <th className="sticky top-0 px-6 py-3 ">No</th>
@@ -185,33 +199,111 @@ function AdsManagerListingPage() {
               <th className="sticky top-0 px-6 py-3 ">Amount Spend</th>
             </tr>
           </thead>
-          <tbody>
-            {items.map((item, index) => (
-              <tr key={item.id}>
-                <td className="text-center">{index + 1}</td>
-                <td className="truncate" style={{ maxWidth: "200px" }}>
-                  {item.name}
-                </td>
-                <td className="text-center">
-                  <div className="delivery-status active">{item.status}</div>
-                </td>
-                <td className="text-center">{item.campaign.name}</td>
-                <td className="text-center">
-                  ${formatNumber(item.campaign.lifetime_budget)}
-                </td>
-                <td className="text-center">{item.insight?.objective}</td>
-                <td className="text-center">
-                  {formatNumberWithComma(item.insight?.reach)}
-                </td>
-                <td className="text-center">
-                  {formatNumberWithComma(item.insight?.impressions)}
-                </td>
-                <td className="text-center">
-                  {item.insight?.spend ? `$ ${item.insight?.spend}` : ""}
-                </td>
-              </tr>
-            ))}
-          </tbody>
+          <tr>
+            <td colSpan={9}>
+              {loading && (
+                <div
+                  role="status"
+                  className="p-4 space-y-4 border border-gray-200 divide-y divide-gray-200 rounded shadow animate-pulse dark:divide-gray-700 md:p-6 dark:border-gray-700"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                      <div className="w-full h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                    </div>
+                    <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
+                    <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
+                    <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
+                    <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
+                  </div>
+                  <div className="flex items-center justify-between pt-4">
+                    <div>
+                      <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                      <div className="w-full h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                    </div>
+                    <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
+                    <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
+                    <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
+                    <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
+                  </div>
+                  <div className="flex items-center justify-between pt-4">
+                    <div>
+                      <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                      <div className="w-full h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                    </div>
+                    <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
+                    <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
+                    <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
+                    <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
+                  </div>
+                  <div className="flex items-center justify-between pt-4">
+                    <div>
+                      <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                      <div className="w-full h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                    </div>
+                    <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
+                    <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
+                    <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
+                    <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
+                  </div>
+                  <div className="flex items-center justify-between pt-4">
+                    <div>
+                      <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                      <div className="w-full h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                    </div>
+                    <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
+                    <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
+                    <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
+                    <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
+                  </div>
+                </div>
+              )}
+            </td>
+          </tr>
+          {!loading && items.length === 0 && (
+            <div className="py-10">
+              <p className="absolute left-[50%] translate-x-[-50%] font-light italic">
+                There is no available data for this user
+              </p>
+            </div>
+          )}
+          {items.length > 0 && !loading && (
+            <tbody>
+              {items.map((item, index) => (
+                <tr key={item.id}>
+                  <td className="text-center">{index + 1}</td>
+                  <td className="truncate" style={{ maxWidth: '200px' }}>
+                    {item.name}
+                  </td>
+                  <td className="text-center">
+                    <div className="delivery-status active">{item.status}</div>
+                  </td>
+                  <td className="text-center">{item.campaign.name}</td>
+                  <td className="text-center">
+                    $ {formatNumber(item.campaign.lifetime_budget)}
+                  </td>
+                  <td className="text-center">
+                    {fetchingInSightWrapper(item.insight?.objective)}
+                  </td>
+                  <td className="text-center">
+                    {fetchingInSightWrapper(
+                      formatNumberWithComma(item.insight?.reach)
+                    )}
+                  </td>
+                  <td className="text-center">
+                    {fetchingInSightWrapper(
+                      formatNumberWithComma(item.insight?.impressions)
+                    )}
+                  </td>
+                  <td className="text-center">
+                    {fetchingInSightWrapper(
+                      item.insight?.spend ? `$ ${item.insight?.spend}` : ''
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          )}
         </table>
       </div>
     </div>
