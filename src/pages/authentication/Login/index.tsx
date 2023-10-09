@@ -1,6 +1,45 @@
-import { Link } from 'react-router-dom';
+import React from "react";
+import { Link } from "react-router-dom";
 
 function LoginPages() {
+  const [isSdkLoaded, setIsSdkLoaded] = React.useState(false);
+
+  React.useEffect(() => {
+    if (window.FB) {
+      setIsSdkLoaded(true);
+    }
+    if (!window.FB) {
+      window.fbAsyncInit = function () {
+        window.FB.init({
+          appId: "395200305632619",
+          autoLogAppEvents: true,
+          xfbml: true,
+          version: "v18.0",
+        });
+        setIsSdkLoaded(true);
+      };
+    }
+  }, []);
+
+  const handleLoginClick = () => {
+    if (window.FB) {
+      window.FB.login(
+        (response) => {
+          if (response.authResponse) {
+            window.FB.api(
+              "/me",
+              { fields: "name,email,picture" },
+              (userProfile) => {
+                console.log(userProfile);
+              },
+            );
+          }
+        },
+        { scope: "public_profile,email" },
+      );
+    }
+  };
+
   return (
     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -73,6 +112,15 @@ function LoginPages() {
             </button>
           </div>
         </form>
+        <div className="mt-4">
+          <button
+            onClick={handleLoginClick}
+            disabled={!isSdkLoaded}
+            className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          >
+            Login With Facebook
+          </button>
+        </div>
 
         <p className="mt-10 text-center text-sm text-gray-500">
           Not a member?

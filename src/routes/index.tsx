@@ -1,11 +1,11 @@
-import React, { lazy } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import React, { lazy } from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
-import { PageNotFound } from '../components';
-import Containers from '../containers';
-import ProtectedRoutes from './private';
+import { PageNotFound } from "../components";
+import Containers from "../containers";
+import ProtectedRoutes from "./private";
 
-const LazyLoginPage = lazy(() => import('../pages/authentication/Login'));
+const LazyLoginPage = lazy(() => import("../pages/authentication/Login"));
 
 const ApplicationRoutes = () => {
   return (
