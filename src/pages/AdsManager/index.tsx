@@ -304,7 +304,7 @@ function AdsManagerListingPage() {
             )}
             {!loading && items.length === 0 && (
               <tr>
-                <td>
+                <td colSpan={9}>
                   <div className="py-10">
                     <p className="absolute left-[50%] translate-x-[-50%] font-light italic">
                       There is no available data for this user
